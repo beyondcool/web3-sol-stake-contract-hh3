@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+
+# Hardhat build artifacts & cache
+artifacts/
+cache/
+build-info/
+
+# TypeChain generated types
+types/
+
+# Hardhat Ignition deployment artifacts
+ignition/deployments/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Hardhat coverage reports
+coverage/
+
+# Foundry / forge-std
+out/
+snapshots/
+.gas-snapshot
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# TypeScript build info
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Misc
+*.orig
+/dist
+/bundle
