@@ -10,4 +10,8 @@
     npm install @openzeppelin/contracts-upgradeable
     ```
 5. 执行`npx hardhat compile`尝试编译，显示编译通过。
-6. 
+6. 让claude把部署脚本搬过来，提示词：
+   ```plaintext
+    咱们这个项目是另一个项目（/home/zh/work_sol/Advanced2-contract-stake/stake-contract）的升级版，只是把hardhat2升级成hardhar3，我已经把合约copy过来啦，请你把部署脚本（在scripts目录里）的逻辑在咱们这个hardhat3项目中再实现一次！
+   ```
+7. 
