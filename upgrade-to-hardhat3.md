@@ -19,3 +19,4 @@
    咱们这个项目是另一个项目（/home/zh/work_sol/Advanced2-contract-stake/stake-contract）的升级版，只是把hardhat2升级成hardhar3，我已经把合约copy过来啦，请你把测试脚本（在test目录里）的逻辑在咱们这个hardhat3项目中再实现一次！尽量照搬，不兼容就修改一下。 
 
    ```
+8. 让claude补充【测试脚本】覆盖了超过80%，提示词：
