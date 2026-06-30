@@ -1,5 +1,5 @@
 新脚本 (scripts/)
-  
+  ```shell
   ┌──────────────────────┬──────────────────────────────────────────────────────────────────────────────┬──────────────────────┐
   │         脚本         │                                     说明                                     │      对应旧文件      │
   ├──────────────────────┼──────────────────────────────────────────────────────────────────────────────┼──────────────────────┤
@@ -21,19 +21,19 @@
   关键变动（HH2 → HH3 适配）
 
   ┌───────────────┬────────────────────────────────────────────────────┬─────────────────────────────────────────────────────────────────────────────────┐
-  │     领域      │                      HH2 (旧)                      │                                    HH3 (新)                                     │
+  │     领域       │                      HH2 (旧)                      │                                    HH3 (新)                                     │
   ├───────────────┼────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────┤
-  │ 入口          │ const { ethers } = require("hardhat")              │ import hre from "hardhat" + const { ethers } = await hre.network.create()       │
+  │ 入口           │ const { ethers } = require("hardhat")              │ import hre from "hardhat" + const { ethers } = await hre.network.create()       │
   ├───────────────┼────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────┤
-  │ 插件          │ require("@openzeppelin/hardhat-upgrades") 自动注册 │ import upgradesPlugin from "@openzeppelin/hardhat-upgrades" → 加进 plugins 数组 │
+  │ 插件           │ require("@openzeppelin/hardhat-upgrades") 自动注册 │ import upgradesPlugin from "@openzeppelin/hardhat-upgrades" → 加进 plugins 数组 │
   ├───────────────┼────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────┤
-  │ 插件          │ require("@openzeppelin/hardhat-upgrades") 自动注册 │ import upgradesPlugin from "@openzeppelin/hardhat-upgrades" → 加进 plugins 数组 │
+  │ 插件           │ require("@openzeppelin/hardhat-upgrades") 自动注册 │ import upgradesPlugin from "@openzeppelin/hardhat-upgrades" → 加进 plugins 数组 │
   ├───────────────┼────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────┤
-  │ upgrades 访问 │ const { upgrades } = require("hardhat")            │ hre.upgrades.deployProxy(...)                                                   │
+  │ upgrades 访问  │ const { upgrades } = require("hardhat")            │ hre.upgrades.deployProxy(...)                                                   │
   ├───────────────┼────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────┤
-  │ 合约验证      │ hre.run("verify:verify", {...})                    │ import { verifyContract } from "@nomicfoundation/hardhat-verify/verify"         │
+  │ 合约验证       │ hre.run("verify:verify", {...})                    │ import { verifyContract } from "@nomicfoundation/hardhat-verify/verify"         │
   ├───────────────┼────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────┤
-  │ 模块系统      │ CommonJS (.js)                                     │ ESM (.ts，import/export)                                                        │
+  │ 模块系统       │ CommonJS (.js)                                     │ ESM (.ts，import/export)                                                        │
   └───────────────┴────────────────────────────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────┘
 
   运行方式
@@ -49,3 +49,5 @@
 
   # 其他脚本同理
   npx hardhat run scripts/addPool.ts --network sepolia
+
+  ```
