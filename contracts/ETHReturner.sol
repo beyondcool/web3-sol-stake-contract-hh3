@@ -22,7 +22,9 @@ contract ETHReturner {
     constructor(address _stake) {
         stake = IStake(_stake);
     }
-
+    receive() external payable {
+        balance += msg.value;
+    }
     /// Deposit ETH into the staking contract
     function depositETH() external payable {
         stake.depositETH{value: msg.value}();

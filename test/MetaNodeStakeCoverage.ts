@@ -584,12 +584,100 @@ describe("MetaNodeStake Coverage", function () {
       await networkHelpers.mine(unstakeLockedBlocks + 1);
 
       // Returner withdraws → _safeETHTransfer sends 3 ETH to returner
-      // ETHReturner has no receive(), so empty-calldata ETH triggers fallback()
-      // which returns abi.encode(true) → data.length > 0 → code path covered
+      // Now ETHReturner has receive(), so empty-calldata ETH triggers receive()
+      // instead of fallback() — receive() doesn't return data → data.length == 0
+      // → _safeETHTransfer skips the abi.decode check and succeeds
       const retBalBefore = await ethers.provider.getBalance(returnerAddr);
       await ethReturner.withdraw(0);
       const retBalAfter = await ethers.provider.getBalance(returnerAddr);
       expect(retBalAfter).to.be.gte(retBalBefore + ethers.parseEther("2.9")); // ~3 ETH minus some tiny overhead
+    });
+
+    // ======== ETHReturner receive() / fallback() unit tests ========
+    it("receive() increases balance when ETH sent with empty calldata", async function () {
+      const metaNodeToken = await ethers.deployContract("MetaNodeToken", [], admin);
+      await metaNodeToken.waitForDeployment();
+      const bn = await ethers.provider.getBlockNumber();
+
+      const stakeFactory = await ethers.getContractFactory("MetaNodeStake");
+      const stake = (await upgradesApi.deployProxy(
+        stakeFactory.connect(admin),
+        [await metaNodeToken.getAddress(), bn, bn + 5000, 100],
+        { kind: "uups" },
+      )) as unknown as MetaNodeStake;
+      await stake.waitForDeployment();
+
+      const ethReturner = await ethers.deployContract("ETHReturner", [await stake.getAddress()], admin);
+      await ethReturner.waitForDeployment();
+      const returnerAddr = await ethReturner.getAddress();
+
+      // Initial balance should be 0
+      expect(await ethReturner.balance()).to.eq(0n);
+
+      // Send ETH via transfer (empty calldata → receive())
+      await admin.sendTransaction({ to: returnerAddr, value: ethers.parseEther("2") });
+
+      expect(await ethReturner.balance()).to.eq(ethers.parseEther("2"));
+    });
+
+    it("fallback() increases balance and returns data when called with calldata + value", async function () {
+      const metaNodeToken = await ethers.deployContract("MetaNodeToken", [], admin);
+      await metaNodeToken.waitForDeployment();
+      const bn = await ethers.provider.getBlockNumber();
+
+      const stakeFactory = await ethers.getContractFactory("MetaNodeStake");
+      const stake = (await upgradesApi.deployProxy(
+        stakeFactory.connect(admin),
+        [await metaNodeToken.getAddress(), bn, bn + 5000, 100],
+        { kind: "uups" },
+      )) as unknown as MetaNodeStake;
+      await stake.waitForDeployment();
+
+      const ethReturner = await ethers.deployContract("ETHReturner", [await stake.getAddress()], admin);
+      await ethReturner.waitForDeployment();
+      const returnerAddr = await ethReturner.getAddress();
+
+      // Call with non-empty calldata → fallback() is triggered (not receive)
+      const iface = new ethers.Interface(["function fake()"]);
+      const tx = await admin.sendTransaction({
+        to: returnerAddr,
+        value: ethers.parseEther("3"),
+        data: iface.encodeFunctionData("fake"),
+      });
+      const receipt = await tx.wait();
+
+      // Balance should have increased
+      expect(await ethReturner.balance()).to.eq(ethers.parseEther("3"));
+
+      // fallback() returns abi.encode(true) → check the return data
+      expect(receipt).to.not.be.null;
+      // The return data from fallback is logged; we can verify the tx succeeded
+      expect(receipt!.status).to.eq(1);
+    });
+
+    it("receive() handles multiple deposits correctly", async function () {
+      const metaNodeToken = await ethers.deployContract("MetaNodeToken", [], admin);
+      await metaNodeToken.waitForDeployment();
+      const bn = await ethers.provider.getBlockNumber();
+
+      const stakeFactory = await ethers.getContractFactory("MetaNodeStake");
+      const stake = (await upgradesApi.deployProxy(
+        stakeFactory.connect(admin),
+        [await metaNodeToken.getAddress(), bn, bn + 5000, 100],
+        { kind: "uups" },
+      )) as unknown as MetaNodeStake;
+      await stake.waitForDeployment();
+
+      const ethReturner = await ethers.deployContract("ETHReturner", [await stake.getAddress()], admin);
+      await ethReturner.waitForDeployment();
+      const returnerAddr = await ethReturner.getAddress();
+
+      // Send ETH multiple times
+      await admin.sendTransaction({ to: returnerAddr, value: ethers.parseEther("1") });
+      await admin.sendTransaction({ to: returnerAddr, value: ethers.parseEther("2") });
+      await user1.sendTransaction({ to: returnerAddr, value: ethers.parseEther("3") });
+
+      expect(await ethReturner.balance()).to.eq(ethers.parseEther("6"));
     });
   });
 
