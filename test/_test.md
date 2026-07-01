@@ -18,3 +18,4 @@ Saved html report to /home/zh/work_sol/web3-sol-stake-contract/coverage/html
 ╚═════════════════════════════╧════════╧═════════════╧═════════════════╝
 ```
 覆盖率达到80%以上。
+666
